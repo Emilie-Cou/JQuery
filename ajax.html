@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajax</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-style: solid;
+        }
+        td, th {
+            text-align: center;
+            border-style: solid;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Rappel tableau -->
+    <!-- <table>
+        <caption>Titre</caption>
+            <thead> header du tableau
+                <tr> ligne titre
+                    <th>case titre 1</th>
+                    <th>case titre 2</th>
+                </tr>
+            </thead>
+            <tbody> body du tableau
+                <tr> ligne 1
+                    <td>case 1</td>
+                    <td>case 2</td>
+                </tr>
+                <tr> ligne 2
+                    <td>case 1</td>
+                    <td>case 2</td>
+                </tr>
+            </tbody>
+    </table> -->
+</body>
+</html>
+
+<script>
+
+//-------------------------------------------------------------------------------------------/
+// // DEMO                                                                                  /
+// // Initialisation de la page html                                                       /
+// let branche = $('<ul></ul>');                                                           \
+//     $('body').html(branche);                                                             \
+//                                                                                           \
+// // Mise en place du système ajax + récupération de données                                /
+//     $.ajax({                                                                             /
+//         url: 'https://api.github.com/repos/dotnet/AspNetCore.Docs/branches',            /
+//         type: 'GET',                                                                    \
+//         // body: jsonBody,                                                               \
+//         success: function(data){                                                          \
+//             $.each(data, function(index, element){                                        /
+//                 brol = element.name;                                                     /
+//                 branche.append('<li>' + brol + '</li>')                                 /
+//             });                                                                         \
+//         },                                                                               \
+//     });                                                                                   \
+//-------------------------------------------------------------------------------------------/
+
+
+// Construction d'un Pokédex étape par étape
+// Initialisation de la page html: création d'un choix de langue d'affichage
+$('body').html('<h1>Pokemons</h1>');
+
+// Mise en place des "bouttons"
+let languages = $('<h4 id="lang"></h4>');
+let french = $('<span class="lang">Français </span>')
+let english = $('<span class="lang"> Anglais </span>')
+let corean = $('<span class="lang"> Coréen </span>')
+let spain = $('<span class="lang"> Espagnol </span>')
+languages.append(french)
+    .append(english)
+    .append(corean)
+    .append(spain)
+
+// J'ajoute languages après le h1 + fonction au click sur h1 pour afficher languages
+$('h1').after(languages).on('click', function () {
+    languages.slideDown(1500);
+});
+// A la construction de la page, languages est caché
+languages.hide();
+
+
+// J'ajoute une petite phrase pour savoir en quelle langue c'est affiché
+// Mise en place de l'espace de la phrase
+let choix = $('<h5 id="choix"></h5>');
+let choixFrench = $('<span class="choix">J\'affiche le texte en Français.</span>');
+let choixEnglish = $('<span class="choix">J\'affiche le texte en Anglais.</span>');
+let choixCorean = $('<span class="choix">J\'affiche le texte en Coréen.</span>');
+let choixSpain = $('<span class="choix">J\'affiche le texte en Espagnol.</span>');
+choix.append(choixFrench)
+    .append(choixEnglish)
+    .append(choixCorean)
+    .append(choixSpain);
+
+// J'ajoute choix après languages + fonction au click sur languages pour afficher la phrase
+languages.after(choix).on('click', function () {
+    choix.slideDown(1000);
+});
+// A la construction de la page, choix est caché
+choix.hide();
+
+
+
+// Création des fonctions de changement de langue
+french.on('click', function () {    // Au click sur french
+    tabBody.html('');               // Je replace le body par ''
+    populate('fr');                 // Je déclanche ma fonction principale avec la langue que j'ai choisie en paramètre
+    $('span.lang').show();          // J'affiche tous mes spans avec class="lang"
+    french.hide();                  // Je cache la langue choisie
+    $('span.choix').hide();         // Je cache les autres phrases
+    choixFrench.show();             // J'affiche ma phrase
+});
+
+english.on('click', function () {
+    tabBody.html('');
+    populate('en');
+    $('span.lang').show();
+    english.hide();
+    $('span.choix').hide();
+    choixEnglish.show();
+});
+
+corean.on('click', function () {
+    tabBody.html('');
+    populate('ko');
+    $('span.lang').show();
+    corean.hide();
+    $('span.choix').hide();
+    choixCorean.show();
+});
+
+spain.on('click', function () {
+    tabBody.html('');
+    populate('es');
+    $('span.lang').show();
+    spain.hide();
+    $('span.choix').hide();
+    choixSpain.show();
+});
+
+
+// Initialisation de la page html: création du tableau pour l'affichage
+    let tableau = $('<table></table>');
+    let tabHead = $('<thead></thead>');
+    let tabBody = $('<tbody></tbody>');
+    let ligne = $('<tr></tr>');
+    let caseTitre = $('<th></th>');
+    let caseData = $('<td></td>');
+
+    let monTab = $('h5').after(tableau);
+    tableau.append(tabHead);
+    tabHead.append(ligne);
+    ligne.append('<th>ID</th>')
+        .append('<th>Nom d\'origine</th>')
+        .append('<th>Nom</th>')
+        .append('<th>Description</th>')
+        .append('<th>Photo</th>');
+    tabHead.after(tabBody);
+    tableau.hide();
+
+// Mise en place du système ajax + récupération de données
+// La première requête ajax permet de trouver le nom et l'url du pokémon
+// La deuxième requête ajax permet de trouver les infos qu'il nous faut dans l'url du pokémon,
+    // dont l'url pour plus de détails
+// La troisième requête ajax permet de trouver le noms en français ainsi que la descrpition en français dans l'url2
+
+    function populate (lang) {          // Création d'une fonction pour déclancher l'affichage avec la langue voulue
+        $('table').hide();
+        $.ajax({
+            url: 'https://pokeapi.co/api/v2/pokemon',
+            type: 'GET',
+            // body: jsonBody,
+            success: function(data){
+                // Requête 1
+                $.each(data.results, function(index, element){
+                    brolUrl = element.url;
+                    
+                    // Requête 2
+                    $.ajax({
+                        url: brolUrl,  // https://pokeapi.co/api/v2/pokemon/
+                        type: 'GET',
+                        success: function(dataPoke){
+                            newUrl = dataPoke.species.url;
+                            
+                            // Requête 3
+                            $.ajax({
+                                url: newUrl,  // https://pokeapi.co/api/v2/pokemon-species/
+                                type: 'GET',
+                                success: function(data){
+
+                                    // Comme les fonctions sont imbriquées, je peux récupérer mes variable de la requête 1 et 2 dans ma requête 3
+                                    id = dataPoke.id;
+                                    brol = dataPoke.name;
+                                    brolImg = '<img src="'+dataPoke.sprites.front_default+'" alt="image">';
+                                    
+                                        // Technique du prof, un seul résultat
+                                    nomFr = data.names.filter(name => name.language.name == lang)[0].name;
+                                        // Ma méthode, tous les résultats en fr sur la même ligne si je mets mon .append dans mon if
+                                    $.each(data.flavor_text_entries, function(index, element){
+                                        langue = element.language.name;
+                                        if (langue == lang ) {
+                                            description = element.flavor_text;
+                                        };
+                                    });
+                                    
+                                    // En remplissant mes cases à la toute fin de ma dernière requête, je sais gérer mon affichage, l'ordre de mes colonnes
+                                        // Placé comme ca, je n'ai qu'une seule description
+                                    let lignePoke = $('<tr></tr>');
+                                    tabBody.append(lignePoke);
+                                    lignePoke.append('<td>' + id + '</td>')
+                                        .append('<td>' + brol + '</td>')
+                                        .append('<td>' + nomFr + '</td>')
+                                        .append('<td>' + description + '</td>')
+                                        .append('<td>' + brolImg + '</td>');
+                                },
+                            });
+                        },
+                    });
+                });
+            },
+        });
+        // Affiche le tableau avec un petit effet
+        $('table').fadeIn(1500);
+    };
+</script>
